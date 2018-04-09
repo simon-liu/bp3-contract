@@ -13,21 +13,8 @@ contract Owned {
     }
 }
 
-contract Stop is Owned {
 
-    bool public stopped = false;
-
-    modifier stoppable {
-        require(!stopped);
-        _;
-    }
-
-    function stop() public onlyOwner {
-        stopped = true;
-    }
-}
-
-contract BitPoker is Owned, Stop {
+contract BitPoker is Owned {
 
     uint8 public version = 1;
 
@@ -37,12 +24,12 @@ contract BitPoker is Owned, Stop {
 
     event Transfer(uint32 userId, address dest, uint256 amount);
 
-    function () public stoppable payable {
+    function () public payable {
        deposit();
     }
 
     // 用户充值
-    function deposit() public stoppable payable {
+    function deposit() public payable {
         require(msg.value >= 0.1 ether);
 
         uint32 userId = extractUserId(msg.data);
@@ -71,15 +58,13 @@ contract BitPoker is Owned, Stop {
     }
 
     // 结算
-    function settle() public stoppable {
+    function settle() public {
         // TODO impl
         _balances[0] = 0;
     }
 
     // 销毁合约
     function close(address dest) public onlyOwner {
-        stop();
-
         selfdestruct(dest);
     }
 
