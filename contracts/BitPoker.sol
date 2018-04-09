@@ -20,7 +20,11 @@ contract BitPoker is Owned {
 
     mapping (uint32 => uint256) _balances;
 
-    event Deposit(uint32 userId, uint amount, uint256 balance);
+    mapping (address => uint256) _volatile_balances;
+
+    event PreDeposit(address src);
+
+    event PostDeposit(uint32 userId, uint256 balance);
 
     event Transfer(uint32 userId, address dest, uint256 amount);
 
@@ -28,16 +32,29 @@ contract BitPoker is Owned {
        deposit();
     }
 
-    // 用户充值
+    // 用户（预）充值
     function deposit() public payable {
-        require(msg.value >= 0.1 ether);
+        require(msg.value >= 0.1 ether && msg.value <= 100 ether);
 
-        uint32 userId = extractUserId(msg.data);
-        _balances[userId] += msg.value;
+        _volatile_balances[msg.sender] += msg.value;
 
-        assert(_balances[userId] <= 500 ether);
+        emit PreDeposit(msg.sender);
+    }
 
-        emit Deposit(userId, msg.value, _balances[userId]);
+    // 管理员确认充值
+    function confirmDeposit(address[] addresses, uint32[] userIds) public onlyOwner {
+        require(addresses.length > 0);
+        require(addresses.length == userIds.length);
+
+        for (uint i = 0; i < addresses.length; i++) {
+            uint v = _volatile_balances[addresses[i]];
+            if (v > 0) {
+                _volatile_balances[addresses[i]] -= v;
+                _balances[userIds[i]] += v;
+
+                emit PostDeposit(userIds[i], _balances[userIds[i]]);
+            }
+        }
     }
 
     // 查询用户余额
@@ -58,7 +75,7 @@ contract BitPoker is Owned {
     }
 
     // 结算
-    function settle() public {
+    function settle() public onlyOwner {
         // TODO impl
         _balances[0] = 0;
     }
