@@ -50,7 +50,6 @@ contract('BitPoker', async(accounts) => {
         try {
             await instance.sendTransaction({
                 'value': 1130023456789012098,
-                'data': '092400',
                 'from': accounts[0]
             });
             assert.ok(false, "no result should be returned.");
