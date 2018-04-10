@@ -11,7 +11,6 @@ contract('BitPoker', async(accounts) => {
 
         let r2 = await instance.confirmDeposit([accounts[0]], [userId], {'from': accounts[0]});
         assert.equal(r2.logs[0].args.userId, userId);
-        assert.equal(r2.logs[0].args.balance, v1);
 
         let b1 = await instance.balanceOf.call(userId);
         assert.equal(b1.toNumber(), v1);
