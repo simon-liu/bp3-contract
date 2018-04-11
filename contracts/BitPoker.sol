@@ -22,9 +22,9 @@ contract BitPoker is Owned {
 
     mapping (address => uint256) _volatile_balances;
 
-    event PreDeposit(address src);
+    event PreDeposit(address src, uint256 amount);
 
-    event PostDeposit(uint32 userId);
+    event Deposit(uint32 userId);
 
     event Transfer(uint32 userId, address dest, uint256 amount);
 
@@ -38,7 +38,7 @@ contract BitPoker is Owned {
 
         _volatile_balances[msg.sender] += msg.value;
 
-        emit PreDeposit(msg.sender);
+        emit PreDeposit(msg.sender, msg.value);
     }
 
     // 管理员确认充值
@@ -52,7 +52,7 @@ contract BitPoker is Owned {
                 _volatile_balances[addresses[i]] -= v;
                 _balances[userIds[i]] += v;
 
-                emit PostDeposit(userIds[i]);
+                emit Deposit(userIds[i]);
             }
         }
     }
