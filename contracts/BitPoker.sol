@@ -133,18 +133,29 @@ contract BitPoker is Owned {
         require(winners.length > 0 && losers.length > 0);
         require(winners.length == positive.length && losers.length == negative.length);
 
-        uint32[] badUsers; uint256[] lacks; uint256 totalLack; uint256 actualLosed; uint i;
+        uint32 numBadUsers; uint i;
+        for (i = 0; i < losers.length; i++) {
+            if (_balances[losers[i]] < negative[i]) {
+                numBadUsers += 1;
+            }
+        }
+
+        uint32[] memory badUsers = new uint32[](numBadUsers);
+        uint256[] memory lacks = new uint256[](numBadUsers);
+
+        uint256 totalLack; uint256 actualLosed;
 
         // 计算不够结算的金额
-        for (i = 0; i < losers.length; i++) {
+        for (i = 0, uint32 j = 0; i < losers.length; i++) {
             if (_balances[losers[i]] < negative[i]) {
                 uint256 lack = negative[i].sub(_balances[losers[i]]);
 
                 totalLack = totalLack.add(lack);
                 actualLosed = actualLosed.add(_balances[losers[i]]);
 
-                badUsers.push(losers[i]);
-                lacks.push(lack);
+                badUsers[j] = losers[i];
+                lacks[j] = lack;
+                j += 1;
 
                 _balances[losers[i]] = 0;
             } else {
