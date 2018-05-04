@@ -104,7 +104,7 @@ contract BitPoker is Owned {
     }
 
     // 查询用户余额
-    function balanceOf(uint32 userId) public constant returns (uint256) {
+    function balanceOf(uint32 userId) public view returns (uint256) {
         return _balances[userId];
     }
 
