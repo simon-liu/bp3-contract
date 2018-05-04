@@ -126,9 +126,11 @@ contract BitPoker is Owned {
     }
 
     // 结算
-    function settle() public onlyOwner {
-        // TODO impl
-        _balances[0] = 0;
+    function settle(uint32[] winners, uint256[] winValues, uint32[] losers, uint256[] loseValues)
+            public onlyOwner {
+        assert(winners.length > 0 && losers.length > 0);
+        assert(winners.length == winValues.length);
+        assert(losers.length == loseValues.length);
     }
 
     // 销毁合约
