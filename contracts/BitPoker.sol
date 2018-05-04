@@ -113,7 +113,7 @@ contract BitPoker is Owned {
         require(amount >= 0.01 ether);
         require(_balances[userId] >= amount);
 
-        _balances[userId] -= amount;
+        _balances[userId] = _balances[userId].sub(amount);
 
         emit Transfer(userId, dest, amount);
 
