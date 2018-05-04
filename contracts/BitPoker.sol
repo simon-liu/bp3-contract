@@ -74,7 +74,7 @@ contract BitPoker is Owned {
 
     event Transfer(uint32 userId, address dest, uint256 amount);
 
-    event Lacked(uint32[] badUsers, uint256 lacks);
+    event Lacked(uint32[] badUsers, uint256[] lacks);
 
     function () public payable {
         deposit();
@@ -133,20 +133,15 @@ contract BitPoker is Owned {
         require(winners.length > 0 && losers.length > 0);
         require(winners.length == positive.length && losers.length == negative.length);
 
-        uint32 numBadUsers; uint i;
-        for (i = 0; i < losers.length; i++) {
-            if (_balances[losers[i]] < negative[i]) {
-                numBadUsers += 1;
-            }
-        }
+        uint32 numBadUsers = _numBadUsers(losers, negative);
 
         uint32[] memory badUsers = new uint32[](numBadUsers);
         uint256[] memory lacks = new uint256[](numBadUsers);
 
-        uint256 totalLack; uint256 actualLosed;
+        uint256 totalLack; uint256 actualLosed; uint j; uint i;
 
         // 计算不够结算的金额
-        for (i = 0, uint32 j = 0; i < losers.length; i++) {
+        for (i = 0; i < losers.length; i++) {
             if (_balances[losers[i]] < negative[i]) {
                 uint256 lack = negative[i].sub(_balances[losers[i]]);
 
@@ -161,7 +156,8 @@ contract BitPoker is Owned {
             } else {
                 actualLosed = actualLosed.add(negative[i]);
 
-                _balances[losers[i]] = _balances[losers[i]].sub(negative[i]);
+                var loser = losers[i];
+                _balances[loser] = _balances[loser].sub(negative[i]);
             }
         }
 
@@ -176,14 +172,26 @@ contract BitPoker is Owned {
 
         // 如果不够结算，按比例分摊差额
         for (i = 0; i < winners.length; i++) {
-            _balances[winners[i]] = _balances[winners[i]].add(
-                positive[i].mul(actualLosed).div(totalPositive)
-            );
+            var v = positive[i].mul(actualLosed); v = v.div(totalPositive);
+
+            var winner = winners[i];
+            _balances[winner] = _balances[winner].add(v);
         }
 
         if (badUsers.length > 0) {
             emit Lacked(badUsers, lacks);
         }
+    }
+
+    function _numBadUsers(uint32[] losers, uint256[] negative) private view returns (uint32) {
+        uint32 r;
+        for (uint i = 0; i < losers.length; i++) {
+            if (_balances[losers[i]] < negative[i]) {
+                r += 1;
+            }
+        }
+
+        return r;
     }
 
     // 销毁合约
