@@ -29,7 +29,7 @@ contract BitPoker is Owned {
     event Transfer(uint32 userId, address dest, uint256 amount);
 
     function () public payable {
-       deposit();
+        deposit();
     }
 
     // 用户（预）充值
@@ -79,7 +79,7 @@ contract BitPoker is Owned {
         require(_balances[userId] >= 0.01 ether);
 
         uint256 amount = _balances[userId];
-        _balances[userId] = 0
+        _balances[userId] = 0;
 
         emit Transfer(userId, dest, amount);
 
