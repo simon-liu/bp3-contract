@@ -41,7 +41,7 @@ contract BitPoker is Owned {
         emit PreDeposit(msg.sender, msg.value);
     }
 
-    // 管理员确认充值
+    // 系统确认充值
     function confirmDeposit(address[] addresses, uint32[] userIds) public onlyOwner {
         require(addresses.length > 0);
         require(addresses.length == userIds.length);
@@ -64,10 +64,22 @@ contract BitPoker is Owned {
 
     // 提现到指定地址
     function transferTo(uint32 userId, address dest, uint256 amount) public onlyOwner {
-        require(amount >= 0.1 ether);
+        require(amount >= 0.01 ether);
         require(_balances[userId] >= amount);
 
         _balances[userId] -= amount;
+
+        emit Transfer(userId, dest, amount);
+
+        dest.transfer(amount);
+    }
+
+    // 提现全部余额到指定地址
+    function transferTo(uint32 userId, address dest) public onlyOwner {
+        require(_balances[userId] >= 0.01 ether);
+
+        uint256 amount = _balances[userId];
+        _balances[userId] = 0
 
         emit Transfer(userId, dest, amount);
 
