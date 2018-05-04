@@ -74,6 +74,8 @@ contract BitPoker is Owned {
 
     event Transfer(uint32 userId, address dest, uint256 amount);
 
+    event Lacked(uint32[] badUsers, uint256 lacks);
+
     function () public payable {
         deposit();
     }
@@ -126,11 +128,51 @@ contract BitPoker is Owned {
     }
 
     // 结算
-    function settle(uint32[] winners, uint256[] winValues, uint32[] losers, uint256[] loseValues)
+    function settle(uint32[] winners, uint256[] positive, uint32[] losers, uint256[] negative)
             public onlyOwner {
-        assert(winners.length > 0 && losers.length > 0);
-        assert(winners.length == winValues.length);
-        assert(losers.length == loseValues.length);
+        require(winners.length > 0 && losers.length > 0);
+        require(winners.length == positive.length && losers.length == negative.length);
+
+        uint32[] badUsers; uint256[] lacks; uint256 totalLack; uint256 actualLosed; uint i;
+
+        // 计算不够结算的金额
+        for (i = 0; i < losers.length; i++) {
+            if (_balances[losers[i]] < negative[i]) {
+                uint256 lack = negative[i].sub(_balances[losers[i]]);
+
+                totalLack = totalLack.add(lack);
+                actualLosed = actualLosed.add(_balances[losers[i]]);
+
+                badUsers.push(losers[i]);
+                lacks.push(lack);
+
+                _balances[losers[i]] = 0;
+            } else {
+                actualLosed = actualLosed.add(negative[i]);
+
+                _balances[losers[i]] = _balances[losers[i]].sub(negative[i]);
+            }
+        }
+
+        // 总的赢钱金额
+        uint256 totalPositive;
+        for (i = 0; i < positive.length; i++) {
+            totalPositive = totalPositive.add(positive[i]);
+        }
+
+        // 检查输赢是否相等
+        assert(totalPositive == actualLosed.add(totalLack));
+
+        // 如果不够结算，按比例分摊差额
+        for (i = 0; i < winners.length; i++) {
+            _balances[winners[i]] = _balances[winners[i]].add(
+                positive[i].mul(actualLosed).div(totalPositive)
+            );
+        }
+
+        if (badUsers.length > 0) {
+            emit Lacked(badUsers, lacks);
+        }
     }
 
     // 销毁合约
