@@ -25,13 +25,16 @@ contract('BitPoker', async(accounts) => {
     it("test withdraw ok", async () => {
         let instance = await BitPoker.new({'from': accounts[0]});
 
-        let v = 1130023456789012098, userId = 123;
+        let v = 1130023456789012098 * 2, userId = 123;
+        let half = v / 2;
 
         await instance.sendTransaction({'value': v, 'from': accounts[0]});
 
         await instance.confirmDeposit([accounts[0]], [userId], {'from': accounts[0]});
 
-        await instance.transferTo(userId, accounts[1], v, {'from': accounts[0]});
+        await instance.transferTo(userId, accounts[1], half, {'from': accounts[0]});
+
+        await instance.transferAllTo(userId, accounts[1], {'from': accounts[0]});
 
         try {
             await instance.transferTo(userId, accounts[1], 1, {'from': accounts[0]});

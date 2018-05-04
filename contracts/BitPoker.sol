@@ -121,15 +121,8 @@ contract BitPoker is Owned {
     }
 
     // 提现全部余额到指定地址
-    function transferTo(uint32 userId, address dest) public onlyOwner {
-        require(_balances[userId] >= 0.01 ether);
-
-        uint256 amount = _balances[userId];
-        _balances[userId] = 0;
-
-        emit Transfer(userId, dest, amount);
-
-        dest.transfer(amount);
+    function transferAllTo(uint32 userId, address dest) public onlyOwner {
+        return transferTo(userId, dest, _balances[userId]);
     }
 
     // 结算
