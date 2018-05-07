@@ -74,7 +74,7 @@ contract BitPoker is Owned {
 
     event Withdraw(uint32 userId, address dst, uint256 amount);
 
-    event Transfer(uint64 key, uint32 from, uint32 to, uint256 amount);
+    event Transfer(uint64 id, uint32 from, uint32 to, uint256 amount);
 
     function () public payable {
         deposit();
@@ -128,17 +128,17 @@ contract BitPoker is Owned {
     }
 
     // 结算，即互相转账
-    function transfer(uint64[] keys, uint32[] from, uint32[] to, uint256[] amount)
+    function transfer(uint64[] ids, uint32[] from, uint32[] to, uint256[] amount)
             public onlyOwner {
         require(from.length > 0);
-        require(from.length == to.length && to.length == amount.length && amount.length == keys.length);
+        require(from.length == to.length && to.length == amount.length && amount.length == ids.length);
 
         for (uint i = 0; i < from.length; i++) {
             if (_balances[from[i]] >= amount[i]) {
                 _balances[from[i]] = _balances[from[i]].sub(amount[i]);
                 _balances[to[i]] = _balances[to[i]].add(amount[i]);
 
-                emit Transfer(keys[i], from[i], to[i], amount[i]);
+                emit Transfer(ids[i], from[i], to[i], amount[i]);
             }
         }
     }
