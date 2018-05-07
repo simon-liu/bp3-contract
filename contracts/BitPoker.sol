@@ -72,7 +72,7 @@ contract BitPoker is Owned {
 
     event Deposit(uint32 userId);
 
-    event Transfer(uint32 userId, address dest, uint256 amount);
+    event Transfer(uint32 userId, address dst, uint256 amount);
 
     event Lacked(uint32[] badUsers, uint256[] lacks);
 
@@ -125,6 +125,9 @@ contract BitPoker is Owned {
     // 提现全部余额到指定地址
     function withdrawAllTo(uint32 userId, address dst) public onlyOwner {
         return withdrawTo(userId, dst, _balances[userId]);
+    }
+
+    function transfer(uint32) {
     }
 
     // 销毁合约

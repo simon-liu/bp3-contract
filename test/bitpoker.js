@@ -34,7 +34,7 @@ contract('BitPoker', async(accounts) => {
 
         let r = await instance.withdrawTo(userId, accounts[1], half, {'from': accounts[0]});
         assert.equal(r.logs[0].args.userId, userId);
-        assert.equal(r.logs[0].args.dest, accounts[1]);
+        assert.equal(r.logs[0].args.dst, accounts[1]);
         assert.equal(r.logs[0].args.amount, half);
 
         await instance.withdrawAllTo(userId, accounts[1], {'from': accounts[0]});
