@@ -111,7 +111,7 @@ contract BitPoker is Owned {
     }
 
     // 提现到指定地址
-    function transferTo(uint32 userId, address dst, uint256 amount) public onlyOwner {
+    function withdrawTo(uint32 userId, address dst, uint256 amount) public onlyOwner {
         require(amount >= 0.01 ether);
         require(_balances[userId] >= amount);
 
@@ -123,8 +123,8 @@ contract BitPoker is Owned {
     }
 
     // 提现全部余额到指定地址
-    function transferAllTo(uint32 userId, address dst) public onlyOwner {
-        return transferTo(userId, dst, _balances[userId]);
+    function withdrawAllTo(uint32 userId, address dst) public onlyOwner {
+        return withdrawTo(userId, dst, _balances[userId]);
     }
 
     // 销毁合约

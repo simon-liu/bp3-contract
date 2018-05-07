@@ -32,15 +32,15 @@ contract('BitPoker', async(accounts) => {
 
         await instance.confirmDeposit([accounts[0]], [userId], {'from': accounts[0]});
 
-        let r = await instance.transferTo(userId, accounts[1], half, {'from': accounts[0]});
+        let r = await instance.withdrawTo(userId, accounts[1], half, {'from': accounts[0]});
         assert.equal(r.logs[0].args.userId, userId);
         assert.equal(r.logs[0].args.dest, accounts[1]);
         assert.equal(r.logs[0].args.amount, half);
 
-        await instance.transferAllTo(userId, accounts[1], {'from': accounts[0]});
+        await instance.withdrawAllTo(userId, accounts[1], {'from': accounts[0]});
 
         try {
-            await instance.transferTo(userId, accounts[1], 1, {'from': accounts[0]});
+            await instance.withdrawTo(userId, accounts[1], 1, {'from': accounts[0]});
             assert.ok(false, "no result should be returned.");
         } catch (err) {
             assert.ok(true, "exception should be raised.");
