@@ -66,7 +66,7 @@ contract BitPoker is Owned {
 
     mapping (uint32 => uint256) _balances;
 
-    mapping (address => uint256) _volatile_balances;
+    mapping (address => uint256) _pre_deposit_balances;
 
     event PreDeposit(address src, uint256 amount);
 
@@ -84,7 +84,7 @@ contract BitPoker is Owned {
     function deposit() public payable {
         require(msg.value >= 0.1 ether && msg.value <= 100 ether);
 
-        _volatile_balances[msg.sender] += msg.value;
+        _pre_deposit_balances[msg.sender] += msg.value;
 
         emit PreDeposit(msg.sender, msg.value);
     }
@@ -95,9 +95,9 @@ contract BitPoker is Owned {
         require(addresses.length == userIds.length);
 
         for (uint i = 0; i < addresses.length; i++) {
-            uint v = _volatile_balances[addresses[i]];
+            uint v = _pre_deposit_balances[addresses[i]];
             if (v > 0) {
-                _volatile_balances[addresses[i]] -= v;
+                _pre_deposit_balances[addresses[i]] -= v;
                 _balances[userIds[i]] += v;
 
                 emit Deposit(userIds[i]);
