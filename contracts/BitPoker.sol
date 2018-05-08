@@ -90,18 +90,13 @@ contract BitPoker is Owned {
     }
 
     // 系统确认充值
-    function confirmDeposit(address[] addresses, uint32[] userIds) public onlyOwner {
-        require(addresses.length > 0);
-        require(addresses.length == userIds.length);
+    function confirmDeposit(uint32 userId, address addr) public onlyOwner {
+        uint v = _pre_deposit_balances[addr];
+        if (v > 0) {
+            _pre_deposit_balances[addr] = _pre_deposit_balances[addr].sub(v);
+            _balances[userId] = _balances[userId].add(v);
 
-        for (uint i = 0; i < addresses.length; i++) {
-            uint v = _pre_deposit_balances[addresses[i]];
-            if (v > 0) {
-                _pre_deposit_balances[addresses[i]] -= v;
-                _balances[userIds[i]] += v;
-
-                emit Deposit(userIds[i]);
-            }
+            emit Deposit(userId);
         }
     }
 
