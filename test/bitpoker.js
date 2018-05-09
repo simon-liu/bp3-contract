@@ -9,14 +9,14 @@ contract('BitPoker', async(accounts) => {
         let r1 = await instance.sendTransaction({'value': v1, 'from': accounts[0]});
         assert.equal(r1.logs[0].args.src, accounts[0]);
 
-        let r2 = await instance.confirmDeposit([accounts[0]], [userId], {'from': accounts[0]});
+        let r2 = await instance.confirmDeposit(userId, accounts[0], {'from': accounts[0]});
         assert.equal(r2.logs[0].args.userId, userId);
 
         let b1 = await instance.balanceOf.call(userId);
         assert.equal(b1.toNumber(), v1);
 
         await instance.sendTransaction({'value': v2, 'from': accounts[0]});
-        await instance.confirmDeposit([accounts[0]], [userId], {'from': accounts[0]});
+        await instance.confirmDeposit(userId, accounts[0], {'from': accounts[0]});
 
         let b2 = await instance.balanceOf.call(userId);
         assert.equal(b2.toNumber(), v1 + v2);
@@ -30,7 +30,7 @@ contract('BitPoker', async(accounts) => {
 
         await instance.sendTransaction({'value': v, 'from': accounts[0]});
 
-        await instance.confirmDeposit([accounts[0]], [userId], {'from': accounts[0]});
+        await instance.confirmDeposit(userId, accounts[0], {'from': accounts[0]});
 
         let r = await instance.withdrawTo(userId, accounts[1], half, {'from': accounts[0]});
         assert.equal(r.logs[0].args.userId, userId);
