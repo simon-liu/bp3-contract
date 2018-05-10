@@ -47,10 +47,10 @@ contract('BitPoker', async(accounts) => {
         }
     });
 
-    it("test close", async () => {
+    it("test deactivate and close", async () => {
         let instance = await BitPoker.new({'from': accounts[0]});
 
-        await instance.close(accounts[0], {'from': accounts[0]});
+        await instance.deactivate({'from': accounts[0]});
 
         try {
             await instance.sendTransaction({
@@ -62,8 +62,13 @@ contract('BitPoker', async(accounts) => {
             assert.ok(true, "exception should be raised.");
         }
 
+        await instance.close({'from': accounts[0]});
+
         try {
-            await instance.settle({'from': accounts[0]});
+            await instance.sendTransaction({
+                'value': 1130023456789012098,
+                'from': accounts[0]
+            });
             assert.ok(false, "no result should be returned.");
         } catch (err) {
             assert.ok(true, "exception should be raised.");
