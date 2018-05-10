@@ -49,7 +49,7 @@ contract Owned {
 
     address owner;
 
-    function Owned() public { owner = msg.sender; }
+    function Owned() public {owner = msg.sender;}
 
     modifier onlyOwner {
         require(msg.sender == owner);
@@ -64,9 +64,9 @@ contract BitPoker is Owned {
 
     uint8 public version = 1;
 
-    mapping (uint32 => uint256) _balances;
+    mapping(uint32 => uint256) _balances;
 
-    mapping (address => uint256) _pre_deposit_balances;
+    mapping(address => uint256) _pre_deposit_balances;
 
     event PreDeposit(address src, uint256 amount);
 
@@ -76,7 +76,7 @@ contract BitPoker is Owned {
 
     event Transfer(uint64 id, uint32 src, uint32 dst, bool status);
 
-    function () public payable {
+    function() public payable {
         deposit();
     }
 
@@ -123,8 +123,7 @@ contract BitPoker is Owned {
     }
 
     // 结算，即互相转账
-    function transfer(uint64[] ids, uint32[] src, uint32[] dst, uint256[] amount)
-            public onlyOwner {
+    function transfer(uint64[] ids, uint32[] src, uint32[] dst, uint256[] amount) public onlyOwner {
         require(src.length > 0);
         require(src.length == dst.length && dst.length == amount.length && amount.length == ids.length);
 
