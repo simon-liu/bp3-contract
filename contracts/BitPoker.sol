@@ -62,7 +62,14 @@ contract BitPoker is Owned {
 
     using SafeMath for uint256;
 
-    uint8 public version = 1;
+    uint8 private version = 1;
+
+    bool private activated = true;
+
+    modifier onlyActivated {
+        require(activated);
+        _;
+    }
 
     mapping(uint32 => uint256) _balances;
 
@@ -81,7 +88,7 @@ contract BitPoker is Owned {
     }
 
     // 用户（预）充值
-    function deposit() public payable {
+    function deposit() public payable onlyActivated {
         require(msg.value >= 0.1 ether && msg.value <= 100 ether);
 
         _pre_deposit_balances[msg.sender] = _pre_deposit_balances[msg.sender].add(msg.value);
@@ -123,7 +130,8 @@ contract BitPoker is Owned {
     }
 
     // 结算，即互相转账
-    function transfer(uint64[] ids, uint32[] src, uint32[] dst, uint256[] amount) public onlyOwner {
+    function transfer(uint64[] ids, uint32[] src, uint32[] dst, uint256[] amount)
+    public onlyOwner onlyActivated {
         require(src.length > 0);
         require(src.length == dst.length && dst.length == amount.length && amount.length == ids.length);
 
@@ -139,8 +147,15 @@ contract BitPoker is Owned {
         }
     }
 
+    // deactivate
+    function deactivate() public onlyOwner {
+        activated = false;
+    }
+
     // 销毁合约
-    function close(address dst) public onlyOwner {
-        selfdestruct(dst);
+    function close() public onlyOwner {
+        require(!activated);
+
+        selfdestruct(owner);
     }
 }
