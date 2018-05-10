@@ -84,7 +84,7 @@ contract BitPoker is Owned {
     function deposit() public payable {
         require(msg.value >= 0.1 ether && msg.value <= 100 ether);
 
-        _pre_deposit_balances[msg.sender] += msg.value;
+        _pre_deposit_balances[msg.sender] = _pre_deposit_balances[msg.sender].add(msg.value);
 
         emit PreDeposit(msg.sender, msg.value);
     }
