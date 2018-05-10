@@ -62,9 +62,9 @@ contract BitPoker is Owned {
 
     using SafeMath for uint256;
 
-    uint8 private version = 1;
+    uint8 public version = 1;
 
-    bool private activated = true;
+    bool public activated = true;
 
     modifier onlyActivated {
         require(activated);
