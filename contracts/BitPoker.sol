@@ -49,7 +49,7 @@ contract Owned {
 
     address owner;
 
-    function Owned() public {owner = msg.sender;}
+    constructor() public {owner = msg.sender;}
 
     modifier onlyOwner {
         require(msg.sender == owner);
